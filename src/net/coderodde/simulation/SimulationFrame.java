@@ -22,4 +22,8 @@ public final class SimulationFrame {
         frame.setResizable(false);
         frame.setVisible(true);
     }
+    
+    public JFrame getFrame() {
+        return frame;
+    }
 }

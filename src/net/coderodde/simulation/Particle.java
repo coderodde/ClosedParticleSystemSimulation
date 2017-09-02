@@ -161,7 +161,7 @@ public final class Particle {
         int effectiveY = (int) y;
         
         g.setColor(color);
-        g.drawOval(effectiveX - radius, 
+        g.fillOval(effectiveX - radius, 
                    effectiveY - radius,
                    2 * radius,
                    2 * radius);

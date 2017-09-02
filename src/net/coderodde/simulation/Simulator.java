@@ -7,6 +7,9 @@ import java.util.Objects;
 
 public final class Simulator {
 
+    /**
+     * The list of particles.
+     */
     private final List<Particle> particles = new ArrayList<>();
     
     /**
@@ -34,6 +37,16 @@ public final class Simulator {
      */
     private final int sleepTime;
     
+    /**
+     * The exit flag
+     */
+    private volatile boolean exit = false;
+    
+    /**
+     * The pause flag.
+     */
+    private volatile boolean pause = true;
+    
     public Simulator(List<Particle> particles,
                      double worldWidth,
                      double worldHeight,
@@ -50,12 +63,30 @@ public final class Simulator {
         totalEnergy = computeTotalEnergy();
     }
     
+    public void togglePause() {
+        pause = !pause;
+    }
+    
     public void step() {
-        
+        while (!exit) {
+            if (exit) {
+                return;
+            }
+            
+            if (!pause) {
+                makeStep();
+            }
+            
+            sleep(sleepTime);
+        }
     }
     
     List<Particle> getParticles() {
         return Collections.<Particle>unmodifiableList(particles);
+    }
+    
+    private void makeStep() {
+        
     }
     
     private double computeTotalEnergy() {
@@ -124,7 +155,7 @@ public final class Simulator {
     
     private double checkWorldWidth(double worldWidth) {
         return checkWorldDimension(
-                timeStep,
+                worldWidth,
                 "The world width is NaN.",
                 "The world width is non-positive: " + worldWidth,
                 "The world width is infinite.");
@@ -164,5 +195,13 @@ public final class Simulator {
         }
         
         return sleepTime;
+    }
+    
+    private static void sleep(int milliseconds) {
+        try {
+            Thread.sleep(milliseconds);
+        } catch (InterruptedException ex) {
+            
+        }
     }
 }
