@@ -66,14 +66,14 @@ public class SimulationApp {
                                                 worldHeight,
                                                 random);
         
+        SimulationCanvas simulationCanvas = new SimulationCanvas();
+        
         Simulator simulator = new Simulator(particles,
+                                            simulationCanvas,
                                             worldWidth,
                                             worldHeight,
                                             TIME_STEP,
                                             SLEEP_TIME);
-        
-        SimulationCanvas simulationCanvas = 
-                new SimulationCanvas(simulator.getParticles());
         
         SimulationFrame simulationFrame = 
                 new SimulationFrame(simulationCanvas,
@@ -83,6 +83,8 @@ public class SimulationApp {
         simulationFrame.getFrame()
                        .addKeyListener(
                                new SimulationFrameKeyListener(simulator));
+        
+        simulator.run();
     }
     
     private static List<Particle> getParticles(int particles,

@@ -17,12 +17,7 @@ public final class SimulationCanvas extends Canvas {
     /**
      * The list of particles.
      */
-    private final List<Particle> particles;
-    
-    public SimulationCanvas(List<Particle> particles) {
-        this.particles = 
-                Objects.requireNonNull(particles, "The particle list is null.");
-    }
+    private List<Particle> particles;
     
     @Override
     public void paint(Graphics g) {
@@ -33,9 +28,16 @@ public final class SimulationCanvas extends Canvas {
     public void update(Graphics g) {
         g.setColor(getBackground());
         g.clearRect(0, 0, getWidth(), getHeight());
+        System.out.println(particles.get(0));
         
         for (Particle particle : particles) {
             particle.draw(g);
         }
+    }
+    
+    void setParticles(List<Particle> particles) {
+        this.particles = Objects.requireNonNull(
+                particles, 
+                "The particle list is null.");
     }
 }

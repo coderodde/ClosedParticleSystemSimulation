@@ -3,14 +3,27 @@ package net.coderodde.simulation;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
+/**
+ * This class implements the actual simulator.
+ * 
+ * @author Rodion "rodde" Efremov
+ * @version 1.6 (Sep 2, 2017)
+ */
 public final class Simulator {
 
     /**
      * The list of particles.
      */
     private final List<Particle> particles = new ArrayList<>();
+    
+    /**
+     * Holds the canvas for drawing the system.
+     */
+    private final SimulationCanvas simulationCanvas;
     
     /**
      * The time quant.
@@ -47,12 +60,25 @@ public final class Simulator {
      */
     private volatile boolean pause = true;
     
+    /**
+     * Used for mapping the particles to their respective force vectors.
+     */
+    private final Map<Particle, Vector> particleToForceVectorMap = 
+            new HashMap<>();
+    
     public Simulator(List<Particle> particles,
+                     SimulationCanvas simulationCanvas,
                      double worldWidth,
                      double worldHeight,
                      double timeStep,
                      int sleepTime) {
         Objects.requireNonNull(particles, "The particle list is null.");
+        
+        this.simulationCanvas = 
+                Objects.requireNonNull(
+                        simulationCanvas,
+                        "The simulation canvas is null.");
+        
         checkNotEmpty(particles);
         copy(particles);
         checkParticlesDoNotOverlap();
@@ -61,20 +87,19 @@ public final class Simulator {
         this.timeStep = checkTimeStep(timeStep);
         this.sleepTime = checkSleepTime(sleepTime);
         totalEnergy = computeTotalEnergy();
+        simulationCanvas.setParticles(particles);
     }
     
     public void togglePause() {
         pause = !pause;
     }
     
-    public void step() {
+    public void run() {
+        pause = false;
         while (!exit) {
-            if (exit) {
-                return;
-            }
-            
             if (!pause) {
                 makeStep();
+                simulationCanvas.repaint();
             }
             
             sleep(sleepTime);
@@ -86,7 +111,74 @@ public final class Simulator {
     }
     
     private void makeStep() {
-        
+        // Compute the force vectors of all partices:
+        computeForceVectors();
+        updateParticleVelocities();
+        moveParticles();
+        resolveWorldBorderCollisions();
+        particleToForceVectorMap.clear();
+    }
+    
+    private void resolveWorldBorderCollisions() {
+        for (Particle particle : particles) {
+            if (particle.getY() <= 0.0 || particle.getY() >= worldHeight) {
+                particle.setVelocityY(-particle.getVelocityY());
+            } 
+            
+            if (particle.getX() <= 0.0 || particle.getX() >= worldWidth) {
+                particle.setVelocityX(-particle.getVelocityX());
+            }
+        }
+    }
+    
+    private void moveParticles() {
+        for (Particle particle : particles) {
+            particle.setX(particle.getX() + particle.getVelocityX() * timeStep);
+            particle.setY(particle.getY() + particle.getVelocityY() * timeStep);
+        }
+    }
+    
+    private void updateParticleVelocities() {
+        for (Map.Entry<Particle, Vector> e
+                : particleToForceVectorMap.entrySet()) {
+            Particle particle = e.getKey();
+            Vector vector = e.getValue();
+            vector = vector.multiply(1.0 / particle.getMass());
+            
+            particle.setVelocityX(
+                    particle.getVelocityX() + vector.getX() * timeStep);
+            
+            particle.setVelocityY(
+                    particle.getVelocityY() + vector.getY() * timeStep);
+        }
+    }
+    
+    private void computeForceVectors() {
+        for (Particle particle : particles) {
+            Vector vector = new Vector();
+            
+            for (Particle other : particles) {
+                if (particle == other) {
+                    // Do not compute the force from and to itself.
+                    continue;
+                }
+                
+                Vector aux = computeForceVector(particle, other);
+                vector = vector.plus(aux);
+            }
+            
+            particleToForceVectorMap.put(particle, vector);
+        }
+    }
+    
+    private Vector computeForceVector(Particle target, Particle other) {
+        double vectorLength = target.getRejectionForce(other);
+        double dx = target.getX() - other.getX();
+        double dy = other.getY() - target.getY();
+        double angle = Math.atan2(dy, dx);
+        double xComponent = vectorLength * Math.cos(angle);
+        double yComponent = vectorLength * Math.sin(angle);
+        return new Vector(xComponent, yComponent);
     }
     
     private double computeTotalEnergy() {

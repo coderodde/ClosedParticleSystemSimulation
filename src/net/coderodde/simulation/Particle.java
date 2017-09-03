@@ -13,7 +13,7 @@ import java.util.Objects;
  */
 public final class Particle {
 
-    private static final double GRAVITATIONAL_CONSTANT = 1.0;
+    private static final double GRAVITATIONAL_CONSTANT = 10.0;
     
     /**
      * The weight of this particle.
@@ -74,6 +74,10 @@ public final class Particle {
         this.y         = other.y;
         this.velocityX = other.velocityX;
         this.velocityY = other.velocityY;
+    }
+    
+    public Vector getVelocityVector() {
+        return new Vector(velocityX, velocityY);
     }
     
     public double getX() {
@@ -146,6 +150,18 @@ public final class Particle {
     }
     
     /**
+     * Computes the rejection force between this and {@code other} particles.
+     * 
+     * @param other the other particle.
+     * @return the rejection force.
+     */
+    public double getRejectionForce(Particle other) {
+        double distance = getDistance(other);
+        return GRAVITATIONAL_CONSTANT * mass * other.getMass() / 
+               (distance * distance);
+    }
+    
+    /**
      * Computes the potential energy between this and {@code other} particle.
      * 
      * @param other the other particle.
@@ -165,6 +181,11 @@ public final class Particle {
                    effectiveY - radius,
                    2 * radius,
                    2 * radius);
+    }
+    
+    public String toString() {
+        return "[x=" + x + ", y=" + y + ", velocityX=" + velocityX + 
+               ", velocityY=" + velocityY + "]";
     }
     
     private double checkMass(double mass) {
