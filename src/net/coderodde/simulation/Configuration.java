@@ -11,5 +11,5 @@ public final class Configuration {
     /**
      * The rejection force constant.
      */
-    public static final double FORCE_CONSTANT = 100.0;
+    public static final double FORCE_CONSTANT = 1000.0;
 }

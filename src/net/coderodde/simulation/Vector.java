@@ -1,5 +1,14 @@
 package net.coderodde.simulation;
 
+import static net.coderodde.simulation.Utils.checkNonInfinite;
+import static net.coderodde.simulation.Utils.checkNonNaN;
+
+/**
+ * This class implements a two-dimensional vector.
+ * 
+ * @author Rodion "rodde" Efremov
+ * @version 1.6 (Sep 2, 2017)
+ */
 public final class Vector {
 
     /**
@@ -64,17 +73,5 @@ public final class Vector {
         checkNonNaN(value, errorMessageNaN);
         checkNonInfinite(value, errorMessageInfinite);
         return value;
-    }
-    
-    private void checkNonNaN(double value, String errorMessage) {
-        if (Double.isNaN(value)) {
-            throw new IllegalArgumentException(errorMessage);
-        }
-    }
-    
-    private void checkNonInfinite(double value, String errorMessage) {
-        if (Double.isInfinite(value)) {
-            throw new IllegalArgumentException(errorMessage);
-        }
     }
 }

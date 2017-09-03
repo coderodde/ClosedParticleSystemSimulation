@@ -19,7 +19,7 @@ public final class SimulationApp {
     /**
      * The minimum particle mass.
      */
-    private static final double MINIMUM_MASS = 5.0;
+    private static final double MINIMUM_MASS = 15.0;
     
     /**
      * The maximum particle mass.
@@ -54,7 +54,7 @@ public final class SimulationApp {
     /**
      * The maximum initial velocity horizontally and/or vertically.
      */
-    private static final double MAX_INITIAL_VELOCITY = 10.0;
+    private static final double MAX_INITIAL_VELOCITY = 40.0;
     
     /**
      * Defines the entry point of the program.
@@ -97,8 +97,10 @@ public final class SimulationApp {
                                     screenDimension.width,
                                     screenDimension.height);
         
-//        simulationFrame.addKeyListener(new SimulationFrameKeyListener(simulator));
-        simulationCanvas.addKeyListener(new SimulationFrameKeyListener(simulator));
+        SimulationFrameKeyListener keyListener = 
+                new SimulationFrameKeyListener(simulator);
+        
+        simulationFrame.addKeyListener(keyListener);
         simulator.run();
     }
     

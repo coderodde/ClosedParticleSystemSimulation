@@ -15,7 +15,6 @@ public final class SimulationFrameKeyListener implements KeyListener {
     
     @Override
     public void keyTyped(KeyEvent e) {
-        System.out.println("yeah");
         simulator.togglePause();
     }
 

@@ -6,6 +6,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import static net.coderodde.simulation.Utils.checkNonInfinite;
+import static net.coderodde.simulation.Utils.checkNonNaN;
+import static net.coderodde.simulation.Utils.checkNonNegative;
 
 /**
  * This class implements the actual simulator.
@@ -131,6 +134,11 @@ public final class Simulator {
     
     private double getNormalizationConstant(double totalEnergyDelta) {
         double aux = totalEnergyDelta / computeTotalKineticEnergy() + 1;
+        
+        if (aux < 0.0) {
+            return 1.0;
+        }
+        
         return Math.sqrt(aux);
     }
     
@@ -147,7 +155,6 @@ public final class Simulator {
     private double computeTotalEnergyDelta() {
         double currentTotalEnergy = computeTotalEnergy();
         double totalEnergyDelta = totalEnergy - currentTotalEnergy;
-        System.out.println("Delta: " + totalEnergyDelta);
         return totalEnergyDelta;
     }
     
@@ -206,7 +213,7 @@ public final class Simulator {
     private Vector computeForceVector(Particle target, Particle other) {
         double vectorLength = target.getRejectionForce(other);
         double dx = target.getX() - other.getX();
-        double dy = other.getY() - target.getY();
+        double dy = target.getY() - other.getY();
         double angle = Math.atan2(dy, dx);
         double xComponent = vectorLength * Math.cos(angle);
         double yComponent = vectorLength * Math.sin(angle);
@@ -261,19 +268,10 @@ public final class Simulator {
     }
     
     private double checkTimeStep(double timeStep) {
-        if (Double.isNaN(timeStep)) {
-            throw new IllegalArgumentException("The time step is NaN.");
-        }
-        
-        if (timeStep <= 0.0) {
-            throw new IllegalArgumentException(
-                    "The time step is non-positive: " + timeStep + ".");
-        }
-        
-        if (Double.isInfinite(timeStep)) {
-            throw new IllegalArgumentException("The time step is infinite.");
-        }
-        
+        checkNonNaN(timeStep, "The time step is NaN.");
+        checkNonNegative(timeStep,
+                         "The time step is non-positive: " + timeStep + ".");
+        checkNonInfinite(timeStep, "The time step is infinite.");
         return timeStep;
     }
     
@@ -297,18 +295,9 @@ public final class Simulator {
                                        String errorMessageNaN,
                                        String errorMessageNonPositive,
                                        String errorMessageInfinite) {
-        if (Double.isNaN(dimension)) {
-            throw new IllegalArgumentException(errorMessageNaN);
-        }
-        
-        if (dimension <= 0.0) {
-            throw new IllegalArgumentException(errorMessageNonPositive);
-        }
-        
-        if (Double.isInfinite(dimension)) {
-            throw new IllegalArgumentException(errorMessageInfinite);
-        }
-        
+        checkNonNaN(dimension, errorMessageNaN);
+        checkNonNegative(dimension, errorMessageNonPositive);
+        checkNonInfinite(dimension, errorMessageInfinite);
         return dimension;
     }
     
