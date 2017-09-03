@@ -8,7 +8,7 @@ public final class SimulationFrame extends JFrame {
 
     private static final String FRAME_TITLE = "Closed system simulation";
 
-    public SimulationFrame(SimulationCanvas simulationCanvas,
+    public SimulationFrame(SimulationPanel simulationCanvas,
                            int width,
                            int height) {
         super(FRAME_TITLE);

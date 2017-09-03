@@ -13,7 +13,7 @@ import javax.swing.JPanel;
  * @author Rodion "rodde" Efremov
  * @version 1.6 (Sep 2, 2017)
  */
-public final class SimulationCanvas extends JPanel {
+public final class SimulationPanel extends JPanel {
 
     /**
      * The list of particles.

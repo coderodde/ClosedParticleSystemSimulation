@@ -34,7 +34,7 @@ public final class SimulationApp {
     /**
      * The default number of particles in the simulation.
      */
-    private static final int DEFAULT_PARTICLES = 15;
+    private static final int DEFAULT_PARTICLES = 3;
 
     /**
      * The time step.
@@ -81,7 +81,7 @@ public final class SimulationApp {
                                                 worldHeight,
                                                 random);
 
-        SimulationCanvas simulationCanvas = new SimulationCanvas();
+        SimulationPanel simulationCanvas = new SimulationPanel();
 
         Simulator simulator = new Simulator(particles,
                                             simulationCanvas,

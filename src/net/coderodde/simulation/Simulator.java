@@ -26,7 +26,7 @@ public final class Simulator {
     /**
      * Holds the canvas for drawing the system.
      */
-    private final SimulationCanvas simulationCanvas;
+    private final SimulationPanel simulationCanvas;
 
     /**
      * The time quant.
@@ -70,7 +70,7 @@ public final class Simulator {
             new HashMap<>();
 
     public Simulator(List<Particle> particles,
-                     SimulationCanvas simulationCanvas,
+                     SimulationPanel simulationCanvas,
                      double worldWidth,
                      double worldHeight,
                      double timeStep,
@@ -270,6 +270,9 @@ public final class Simulator {
         double aux = totalEnergyDelta / computeTotalKineticEnergy() + 1;
 
         if (aux < 0.0) {
+            // Does not seem to happen any more but you never know..
+            System.err.println("Cannot compute normalization constant. " +
+                               "aux = " + aux);
             return 1.0;
         }
 
