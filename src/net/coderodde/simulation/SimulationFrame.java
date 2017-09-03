@@ -5,9 +5,9 @@ import java.util.Objects;
 import javax.swing.JFrame;
 
 public final class SimulationFrame extends JFrame {
-    
+
     private static final String FRAME_TITLE = "Closed system simulation";
-    
+
     public SimulationFrame(SimulationCanvas simulationCanvas,
                            int width,
                            int height) {

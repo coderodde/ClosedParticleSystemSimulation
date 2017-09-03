@@ -15,47 +15,47 @@ import static net.coderodde.simulation.Configuration.PIXELS_PER_UNIT_LENGTH;
  * @version 1.6 (Sep 2, 2017)
  */
 public final class SimulationApp {
-    
+
     /**
      * The minimum particle mass.
      */
     private static final double MINIMUM_MASS = 15.0;
-    
+
     /**
      * The maximum particle mass.
      */
     private static final double MAXIMUM_MASS = 30.0;
-    
+
     /**
      * Reserve the number of pixels for the title bar.
      */
     private static final int TITLE_BAR_RESERVED_HEIGHT = 50;
-    
+
     /**
      * The default number of particles in the simulation.
      */
-    private static final int DEFAULT_PARTICLES = 6;
-    
+    private static final int DEFAULT_PARTICLES = 15;
+
     /**
      * The time step.
      */
     private static final double TIME_STEP = 0.01;
-    
+
     /**
      * The number of milliseconds spent between two consecutive time quants.
      */
-    private static final int SLEEP_TIME = 20;
-    
+    private static final int SLEEP_TIME = 10;
+
     /**
      * Used for randomly generating the color components.
      */
     private static final int COLOR_CHANNEL_MAX = 256;
-    
+
     /**
      * The maximum initial velocity horizontally and/or vertically.
      */
     private static final double MAX_INITIAL_VELOCITY = 40.0;
-    
+
     /**
      * Defines the entry point of the program.
      * 
@@ -64,61 +64,61 @@ public final class SimulationApp {
     public static void main(String[] args) {
         Dimension screenDimension = Toolkit.getDefaultToolkit().getScreenSize();
         screenDimension.height -= TITLE_BAR_RESERVED_HEIGHT;
-        
+
         double worldWidth = (1.0 * screenDimension.width) 
                                  / PIXELS_PER_UNIT_LENGTH;
-        
+
         double worldHeight = (1.0 * screenDimension.height)
                                   / PIXELS_PER_UNIT_LENGTH;
-        
+
         long seed = System.currentTimeMillis();
         Random random = new Random(seed);
-        
+
         System.out.println("Seed = " + seed);
-        
+
         List<Particle> particles = getParticles(DEFAULT_PARTICLES, 
                                                 worldWidth,
                                                 worldHeight,
                                                 random);
-        
+
         SimulationCanvas simulationCanvas = new SimulationCanvas();
-        
+
         Simulator simulator = new Simulator(particles,
                                             simulationCanvas,
                                             worldWidth,
                                             worldHeight,
                                             TIME_STEP,
                                             SLEEP_TIME);
-        
+
         simulationCanvas.setSimulator(simulator);
-        
+
         SimulationFrame simulationFrame = 
                 new SimulationFrame(simulationCanvas,
                                     screenDimension.width,
                                     screenDimension.height);
-        
+
         SimulationFrameKeyListener keyListener = 
                 new SimulationFrameKeyListener(simulator);
-        
+
         simulationFrame.addKeyListener(keyListener);
         simulator.run();
     }
-    
+
     private static List<Particle> getParticles(int particles,
                                                double worldWidth,
                                                double worldHeight,
                                                Random random) {
         List<Particle> particleList = new ArrayList<>(particles);
-        
+
         for (int i = 0; i < particles; ++i) {
             particleList.add(createRandomParticle(random,
                                                   worldWidth,
                                                   worldHeight));
         }
-        
+
         return particleList;
     }
-    
+
     private static Particle createRandomParticle(Random random,
                                                  double worldWidth,
                                                  double worldHeight) {
@@ -128,15 +128,15 @@ public final class SimulationApp {
         Color color = new Color(random.nextInt(COLOR_CHANNEL_MAX), 
                                 random.nextInt(COLOR_CHANNEL_MAX),
                                 random.nextInt(COLOR_CHANNEL_MAX));
-        
+
         Particle particle = new Particle(mass, radius, color);
-        
+
         particle.setX(worldWidth * random.nextDouble());
         particle.setY(worldHeight * random.nextDouble());
-        
+
         particle.setVelocityX(MAX_INITIAL_VELOCITY * random.nextDouble());
         particle.setVelocityY(MAX_INITIAL_VELOCITY * random.nextDouble());
-        
+
         return particle;
     }
 }

@@ -22,53 +22,53 @@ public final class Simulator {
      * The list of particles.
      */
     private final List<Particle> particles = new ArrayList<>();
-    
+
     /**
      * Holds the canvas for drawing the system.
      */
     private final SimulationCanvas simulationCanvas;
-    
+
     /**
      * The time quant.
      */
     private final double timeStep;
-    
+
     /**
      * The total energy of the simulated system.
      */
     private final double totalEnergy;
-    
+
     /**
      * The width of the system.
      */
     private final double worldWidth;
-    
+
     /**
      * The height of the system.
      */
     private final double worldHeight;
-    
+
     /**
      * Number of milliseconds between two time quants.
      */
     private final int sleepTime;
-    
+
     /**
      * The exit flag
      */
     private volatile boolean exit = false;
-    
+
     /**
      * The pause flag.
      */
     private volatile boolean pause = true;
-    
+
     /**
      * Used for mapping the particles to their respective force vectors.
      */
     private final Map<Particle, Vector> particleToForceVectorMap = 
             new HashMap<>();
-    
+
     public Simulator(List<Particle> particles,
                      SimulationCanvas simulationCanvas,
                      double worldWidth,
@@ -76,12 +76,12 @@ public final class Simulator {
                      double timeStep,
                      int sleepTime) {
         Objects.requireNonNull(particles, "The particle list is null.");
-        
+
         this.simulationCanvas = 
                 Objects.requireNonNull(
                         simulationCanvas,
                         "The simulation canvas is null.");
-        
+
         checkNotEmpty(particles);
         copy(particles);
         checkParticlesDoNotOverlap();
@@ -92,26 +92,26 @@ public final class Simulator {
         totalEnergy = computeTotalEnergy();
         simulationCanvas.setParticles(this.particles);
     }
-    
+
     public void togglePause() {
         pause = !pause;
     }
-    
+
     public void run() {
         while (!exit) {
             if (!pause) {
                 performStep();
                 simulationCanvas.repaint();
             }
-            
+
             sleep(sleepTime);
         }
     }
-    
+
     List<Particle> getParticles() {
         return Collections.<Particle>unmodifiableList(particles);
     }
-    
+
     /**
      * Checks that the particle list is not empty.
      * 
@@ -122,7 +122,7 @@ public final class Simulator {
             throw new IllegalArgumentException("No particles given.");
         }
     }
-    
+
     /**
      * Makes internal copies of all the particles so that client programmer 
      * cannot interfere.
@@ -134,7 +134,7 @@ public final class Simulator {
             this.particles.add(new Particle(particle));
         }
     }
-    
+
     /**
      * Performs one simulation step.
      */
@@ -147,28 +147,28 @@ public final class Simulator {
         normalizeVelocityVectors();
         particleToForceVectorMap.clear();
     }
-    
+
     /**
      * Computes all the repelling force vectors for each particle.
      */
     private void computeForceVectors() {
         for (Particle particle : particles) {
             Vector vector = new Vector();
-            
+
             for (Particle other : particles) {
                 if (particle == other) {
                     // Do not compute the force from and to itself.
                     continue;
                 }
-                
+
                 Vector aux = computeForceVector(particle, other);
                 vector = vector.plus(aux);
             }
-            
+
             particleToForceVectorMap.put(particle, vector);
         }
     }
-    
+
     /**
      * Computes a repelling force vector from {@code other} to {@code target}.
      * 
@@ -186,7 +186,7 @@ public final class Simulator {
         double yComponent = vectorLength * Math.sin(angle);
         return new Vector(xComponent, yComponent);
     }
-    
+
     /**
      * Updates the velocities of each particle.
      */
@@ -197,16 +197,16 @@ public final class Simulator {
             Vector vector = e.getValue();
             // Make the force 'vector' a acceleration vector:
             vector = vector.multiply(1.0 / particle.getMass());
-            
+
             // Update the velocity components:
             particle.setVelocityX(
                     particle.getVelocityX() + vector.getX() * timeStep);
-            
+
             particle.setVelocityY(
                     particle.getVelocityY() + vector.getY() * timeStep);
         }
     }
-    
+
     /**
      * Moves all the particles.
      */
@@ -216,7 +216,7 @@ public final class Simulator {
             particle.setY(particle.getY() + particle.getVelocityY() * timeStep);
         }
     }
-    
+
     /**
      * Resolves all the border collisions.
      */
@@ -225,13 +225,13 @@ public final class Simulator {
             if (particle.getY() <= 0.0 || particle.getY() >= worldHeight) {
                 particle.setVelocityY(-particle.getVelocityY());
             } 
-            
+
             if (particle.getX() <= 0.0 || particle.getX() >= worldWidth) {
                 particle.setVelocityX(-particle.getVelocityX());
             }
         }
     }
-    
+
     /**
      * Normalizes the current velocity vectors such that the total energy of the
      * system remains constant.
@@ -239,13 +239,13 @@ public final class Simulator {
     private void normalizeVelocityVectors() {
         double totalEnergyDelta = computeTotalEnergyDelta();
         double factor = getNormalizationConstant(totalEnergyDelta);
-        
+
         for (Particle particle : particles) {
             particle.setVelocityX(factor * particle.getVelocityX());
             particle.setVelocityY(factor * particle.getVelocityY());
         }
     }
-    
+
     /**
      * Computes the difference between initial total energy and current total
      * energy.
@@ -257,7 +257,7 @@ public final class Simulator {
         double totalEnergyDelta = totalEnergy - currentTotalEnergy;
         return totalEnergyDelta;
     }
-    
+
     /**
      * Computes such a velocity normalization constant, that the total energy of
      * the system remains constant.
@@ -268,14 +268,14 @@ public final class Simulator {
      */
     private double getNormalizationConstant(double totalEnergyDelta) {
         double aux = totalEnergyDelta / computeTotalKineticEnergy() + 1;
-        
+
         if (aux < 0.0) {
             return 1.0;
         }
-        
+
         return Math.sqrt(aux);
     }
-    
+
     /**
      * Computes the sum of kinetic energies of all the particles.
      * 
@@ -283,14 +283,14 @@ public final class Simulator {
      */
     private double computeTotalKineticEnergy() {
         double kineticEnergy = 0.0;
-        
+
         for (Particle particle : particles) {
             kineticEnergy += particle.getKineticEnergy();
         }
-        
+
         return kineticEnergy;
     }
-    
+
     /**
      * Computes the current total energy.
      * 
@@ -298,33 +298,33 @@ public final class Simulator {
      */
     public double computeTotalEnergy() {
         double totalEnergy = 0.0;
-        
+
         for (Particle particle : particles) {
             totalEnergy += particle.getKineticEnergy();
         }
-        
+
         for (int i = 0; i < particles.size(); ++i) {
             Particle particle1 = particles.get(i);
-            
+
             for (int j = i + 1; j < particles.size(); ++j) {
                 Particle particle2 = particles.get(j);
                 totalEnergy += particle1.getPotentialEnergy(particle2);
             }
         }
-        
+
         return totalEnergy;
     }
-    
+
     /**
      * Checks that there is no two different particles on the same spot.
      */
     private void checkParticlesDoNotOverlap() {
         for (int i = 0; i < particles.size(); ++i) {
             Particle particle1 = particles.get(i);
-            
+
             for (int j = i + 1; j < particles.size(); ++j) {
                 Particle particle2 = particles.get(j);
-                
+
                 if (particle1.getX() == particle2.getX()
                         && particle1.getY() == particle2.getY()) {
                     throw new IllegalStateException(
@@ -333,7 +333,7 @@ public final class Simulator {
             }
         }
     }
-    
+
     private double checkTimeStep(double timeStep) {
         checkNonNaN(timeStep, "The time step is NaN.");
         checkNonNegative(timeStep,
@@ -341,7 +341,7 @@ public final class Simulator {
         checkNonInfinite(timeStep, "The time step is infinite.");
         return timeStep;
     }
-    
+
     private double checkWorldWidth(double worldWidth) {
         return checkWorldDimension(
                 worldWidth,
@@ -349,7 +349,7 @@ public final class Simulator {
                 "The world width is non-positive: " + worldWidth,
                 "The world width is infinite.");
     }
-    
+
     private double checkWorldHeight(double worldHeight) {
         return checkWorldDimension(
                 worldHeight,
@@ -357,7 +357,7 @@ public final class Simulator {
                 "The world height is non-positive: " + worldHeight,
                 "The world height is infinite.");
     }
-    
+
     private double checkWorldDimension(double dimension, 
                                        String errorMessageNaN,
                                        String errorMessageNonPositive,
@@ -367,21 +367,21 @@ public final class Simulator {
         checkNonInfinite(dimension, errorMessageInfinite);
         return dimension;
     }
-    
+
     private int checkSleepTime(int sleepTime) {
         if (sleepTime < 1) {
             throw new IllegalArgumentException(
                     "The sleep time is non-positive: " + sleepTime + ".");
         }
-        
+
         return sleepTime;
     }
-    
+
     private static void sleep(int milliseconds) {
         try {
             Thread.sleep(milliseconds);
         } catch (InterruptedException ex) {
-            
+
         }
     }
 }

@@ -17,44 +17,44 @@ import static net.coderodde.simulation.Utils.checkNonNegative;
  * @version 1.6 (Sep 2, 2017)
  */
 public final class Particle {
-    
+
     /**
      * The mass of this particle.
      */
     private final double mass;
-    
+
     /**
      * The radius of the graphical representation of this particle.
      */
     private final int radius;
-    
+
     /**
      * The color of the graphical representation of this particle.
      */
     private final Color color;
-    
+
     /**
      * The current x-coordinate of this particle.
      */
     private double x;
-    
+
     /**
      * The current y-coordinate of this particle.
      */
     private double y;
-    
+
     /**
      * The current velocity to the right. May be negative when the particle 
      * moves to the left.
      */
     private double velocityX;
-    
+
     /**
      * The current velocity downwards. May be negative when the particle moves 
      * upwards.
      */
     private double velocityY;
-    
+
     /**
      * Constructs a new particle.
      * 
@@ -68,7 +68,7 @@ public final class Particle {
         this.color = Objects.requireNonNull(color, 
                                            "The particle color is null.");
     }
-    
+
     /**
      * Copy-constructs a new particle.
      * 
@@ -83,47 +83,47 @@ public final class Particle {
         this.velocityX = other.velocityX;
         this.velocityY = other.velocityY;
     }
-    
+
     public Vector getVelocityVector() {
         return new Vector(velocityX, velocityY);
     }
-    
+
     public double getX() {
         return x;
     }
-    
+
     public double getY() {
         return y;
     }
-    
+
     public double getVelocityX() {
         return velocityX;
     }
-    
+
     public double getVelocityY() {
         return velocityY;
     }
-    
+
     public double getMass() {
         return mass;
     }
-    
+
     public void setX(double x) {
         this.x = checkX(x);
     }
-    
+
     public void setY(double y) {
         this.y = checkY(y);
     }
-    
+
     public void setVelocityX(double velocityX) {
         this.velocityX = checkVelocityX(velocityX);
     }
-    
+
     public void setVelocityY(double velocityY) {
         this.velocityY = checkVelocityY(velocityY);
     }
-    
+
     /**
      * Returns the current speed of this particle.
      * 
@@ -134,7 +134,7 @@ public final class Particle {
         double vySquared = velocityY * velocityY;
         return Math.sqrt(vxSquared + vySquared);
     }
-    
+
     /**
      * Returns the distance between this particle and {@code other}.
      * 
@@ -146,7 +146,7 @@ public final class Particle {
         double dy = y - other.y;
         return Math.sqrt(dx * dx + dy * dy);
     }
-    
+
     /**
      * Computes the kinetic energy of this particle.
      * 
@@ -156,7 +156,7 @@ public final class Particle {
         double speed = getSpeed();
         return 0.5 * mass * speed * speed;
     }
-    
+
     /**
      * Computes the rejection force between this and {@code other} particles.
      * 
@@ -167,7 +167,7 @@ public final class Particle {
         double distance = getDistance(other);
         return FORCE_CONSTANT * mass * other.getMass() / (distance * distance);
     }
-    
+
     /**
      * Computes the potential energy between this and {@code other} particle.
      * 
@@ -177,7 +177,7 @@ public final class Particle {
     public double getPotentialEnergy(Particle other) {
         return FORCE_CONSTANT * mass * other.getMass() / getDistance(other);
     }
-    
+
     /**
      * Draws this particle on a canvas.
      * 
@@ -186,36 +186,36 @@ public final class Particle {
     public void draw(Graphics g) {
         int effectiveX = (int)(x * PIXELS_PER_UNIT_LENGTH);
         int effectiveY = (int)(y * PIXELS_PER_UNIT_LENGTH);
-        
+
         g.setColor(color);
         g.fillOval(effectiveX - radius, 
                    effectiveY - radius,
                    2 * radius,
                    2 * radius);
     }
-    
+
     @Override
     public String toString() {
         return "[x=" + x + ", y=" + y + ", velocityX=" + velocityX + 
                ", velocityY=" + velocityY + "]";
     }
-    
+
     private double checkMass(double mass) {
         checkNonNaN(mass, "The particle mass is NaN.");
         checkNonNegative(mass, "The particle mass is non-positive.");
         checkNonInfinite(mass, "The particle mass is infinite.");
         return mass;
     }
-    
+
     private int checkRadius(int radius) {
         if (radius <= 0) {
             throw new IllegalArgumentException(
                     "The particle radius is non-positive: " + radius);
         }
-        
+
         return radius;
     }
-    
+
     private double checkCoordinate(double coordinate,
                                    String errorMessageNaN,
                                    String errorMessageInfinite) {
@@ -223,28 +223,28 @@ public final class Particle {
         checkNonInfinite(coordinate, errorMessageInfinite);
         return coordinate;
     }
-    
+
     private double checkX(double x) {
         checkCoordinate(x,
                         "The x-coordinate is NaN.", 
                         "The x-coordinate is infinite.");
         return x;
     }
-    
+
     private double checkY(double y) {
         checkCoordinate(y,
                         "The y-coordinate is NaN.", 
                         "The y-coordinate is infinite.");
         return y;
     }
-    
+
     private double checkVelocityX(double velocityX) {
         checkCoordinate(velocityX,
                         "The x-velocity is NaN.",
                         "The x-velocity is infinite.");
         return velocityX;
     }
-    
+
     private double checkVelocityY(double velocityY) {
         checkCoordinate(velocityY,
                         "The y-velocity is NaN.", 
