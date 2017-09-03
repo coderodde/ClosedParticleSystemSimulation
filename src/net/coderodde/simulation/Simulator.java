@@ -98,6 +98,7 @@ public final class Simulator {
         while (!exit) {
             if (!pause) {
                 makeStep();
+                System.out.println("fdsa");
                 simulationCanvas.repaint();
             }
             
@@ -114,8 +115,15 @@ public final class Simulator {
         computeForceVectors();
         updateParticleVelocities();
         moveParticles();
+        computePotentialEnergyDelta();
         resolveWorldBorderCollisions();
         particleToForceVectorMap.clear();
+    }
+    
+    private void computePotentialEnergyDelta() {
+        double currentPotentialEnergy = computeTotalEnergy();
+        double potentialEnergyDelta = currentPotentialEnergy - totalEnergy;
+        System.out.println("Delta: " + potentialEnergyDelta);
     }
     
     private void resolveWorldBorderCollisions() {

@@ -7,8 +7,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class SimulationApp {
-
+/**
+ * This class implements the entire simulation program.
+ * 
+ * @author Rodion "rodde" Efremov
+ * @version 1.6 (Sep 2, 2017)
+ */
+public final class SimulationApp {
+    
     /**
      * The minimum particle mass.
      */
@@ -40,21 +46,29 @@ public class SimulationApp {
     private static final int SLEEP_TIME = 100;
     
     /**
-     * Used for randomly generating the 
+     * Used for randomly generating the color components.
      */
     private static final int COLOR_CHANNEL_MAX = 256;
     
     /**
-     * The maximum initial velocity horizontally or vertically.
+     * The maximum initial velocity horizontally and/or vertically.
      */
     private static final double MAX_INITIAL_VELOCITY = 10.0;
     
+    /**
+     * Defines the entry point of the program.
+     * 
+     * @param args the command line arguments.
+     */
     public static void main(String[] args) {
         Dimension screenDimension = Toolkit.getDefaultToolkit().getScreenSize();
         screenDimension.height -= TITLE_BAR_RESERVED_HEIGHT;
         
-        double worldWidth = screenDimension.width;
-        double worldHeight = screenDimension.height;
+        double worldWidth = (1.0 * screenDimension.width) 
+                                 / Particle.PIXELS_PER_UNIT_LENGTH;
+        
+        double worldHeight = (1.0 * screenDimension.height)
+                                  / Particle.PIXELS_PER_UNIT_LENGTH;
         
         long seed = System.currentTimeMillis();
         Random random = new Random(seed);
@@ -79,8 +93,8 @@ public class SimulationApp {
         
         SimulationFrame simulationFrame = 
                 new SimulationFrame(simulationCanvas,
-                                    (int) worldWidth,
-                                    (int) worldHeight);
+                                    screenDimension.width,
+                                    screenDimension.height);
         
         simulationFrame.addKeyListener(new SimulationFrameKeyListener(simulator));
         simulator.run();
@@ -113,8 +127,12 @@ public class SimulationApp {
         
         Particle particle = new Particle(mass, radius, color);
         
-        particle.setX(worldWidth * random.nextDouble());
-        particle.setY(worldHeight * random.nextDouble());
+        particle.setX(worldWidth  * random.nextDouble() 
+                                  / Particle.PIXELS_PER_UNIT_LENGTH);
+        
+        particle.setY(worldHeight * random.nextDouble() 
+                                  / Particle.PIXELS_PER_UNIT_LENGTH);
+        
         particle.setVelocityX(MAX_INITIAL_VELOCITY * random.nextDouble());
         particle.setVelocityY(MAX_INITIAL_VELOCITY * random.nextDouble());
         

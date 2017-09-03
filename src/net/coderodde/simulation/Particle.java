@@ -12,8 +12,14 @@ import java.util.Objects;
  * @version 1.6 (Sep 2, 2017)
  */
 public final class Particle {
+    
+    /**
+     * Defines the drawing scale. A distance of one unit length corresponds to 
+     * the length of 100 pixels.
+     */
+    public static final int PIXELS_PER_UNIT_LENGTH = 100;
 
-    private static final double FORCE_CONSTANT = 1000000.0;
+    private static final double FORCE_CONSTANT = 1000.0;
     
     /**
      * The weight of this particle.
@@ -167,12 +173,12 @@ public final class Particle {
      * @return potential energy.
      */
     public double getPotentialEnergy(Particle other) {
-        return mass * other.getMass() / getDistance(other);
+        return FORCE_CONSTANT * mass * other.getMass() / getDistance(other);
     }
     
     public void draw(Graphics g) {
-        int effectiveX = (int) x;
-        int effectiveY = (int) y;
+        int effectiveX = (int)(x * PIXELS_PER_UNIT_LENGTH);
+        int effectiveY = (int)(y * PIXELS_PER_UNIT_LENGTH);
         
         g.setColor(color);
         g.fillOval(effectiveX - radius, 
