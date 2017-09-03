@@ -3,6 +3,8 @@ package net.coderodde.simulation;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.Objects;
+import static net.coderodde.simulation.Configuration.FORCE_CONSTANT;
+import static net.coderodde.simulation.Configuration.PIXELS_PER_UNIT_LENGTH;
 
 /**
  * This class defines a particle in the simulation. The entire weight of a
@@ -12,14 +14,6 @@ import java.util.Objects;
  * @version 1.6 (Sep 2, 2017)
  */
 public final class Particle {
-    
-    /**
-     * Defines the drawing scale. A distance of one unit length corresponds to 
-     * the length of 100 pixels.
-     */
-    public static final int PIXELS_PER_UNIT_LENGTH = 100;
-
-    private static final double FORCE_CONSTANT = 1000.0;
     
     /**
      * The weight of this particle.

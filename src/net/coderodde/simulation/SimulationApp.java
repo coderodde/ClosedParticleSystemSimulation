@@ -6,6 +6,7 @@ import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import static net.coderodde.simulation.Configuration.PIXELS_PER_UNIT_LENGTH;
 
 /**
  * This class implements the entire simulation program.
@@ -65,10 +66,10 @@ public final class SimulationApp {
         screenDimension.height -= TITLE_BAR_RESERVED_HEIGHT;
         
         double worldWidth = (1.0 * screenDimension.width) 
-                                 / Particle.PIXELS_PER_UNIT_LENGTH;
+                                 / PIXELS_PER_UNIT_LENGTH;
         
         double worldHeight = (1.0 * screenDimension.height)
-                                  / Particle.PIXELS_PER_UNIT_LENGTH;
+                                  / PIXELS_PER_UNIT_LENGTH;
         
         long seed = System.currentTimeMillis();
         Random random = new Random(seed);
@@ -97,6 +98,7 @@ public final class SimulationApp {
                                     screenDimension.height);
         
         simulationFrame.addKeyListener(new SimulationFrameKeyListener(simulator));
+//        simulationCanvas.addKeyListener(new SimulationFrameKeyListener(simulator));
         simulator.run();
     }
     
@@ -127,11 +129,8 @@ public final class SimulationApp {
         
         Particle particle = new Particle(mass, radius, color);
         
-        particle.setX(worldWidth  * random.nextDouble() 
-                                  / Particle.PIXELS_PER_UNIT_LENGTH);
-        
-        particle.setY(worldHeight * random.nextDouble() 
-                                  / Particle.PIXELS_PER_UNIT_LENGTH);
+        particle.setX(worldWidth * random.nextDouble());
+        particle.setY(worldHeight * random.nextDouble());
         
         particle.setVelocityX(MAX_INITIAL_VELOCITY * random.nextDouble());
         particle.setVelocityY(MAX_INITIAL_VELOCITY * random.nextDouble());
