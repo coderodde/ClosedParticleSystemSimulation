@@ -4,26 +4,22 @@ import java.awt.Color;
 import java.util.Objects;
 import javax.swing.JFrame;
 
-public final class SimulationFrame {
+public final class SimulationFrame extends JFrame {
     
     private static final String FRAME_TITLE = "Closed system simulation";
-    private final JFrame frame = new JFrame(FRAME_TITLE);
     
     public SimulationFrame(SimulationCanvas simulationCanvas,
                            int width,
                            int height) {
+        super(FRAME_TITLE);
         Objects.requireNonNull(simulationCanvas, "The input canvas is null.");
-        frame.setSize(width, height);
+        setSize(width, height);
         simulationCanvas.setSize(width, height);
-        frame.setLocation(0, 0);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.getContentPane().add(simulationCanvas);
+        setLocation(0, 0);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        getContentPane().add(simulationCanvas);
         simulationCanvas.setBackground(Color.BLACK);
-        frame.setResizable(false);
-        frame.setVisible(true);
-    }
-    
-    public JFrame getFrame() {
-        return frame;
+        setResizable(false);
+        setVisible(true);
     }
 }

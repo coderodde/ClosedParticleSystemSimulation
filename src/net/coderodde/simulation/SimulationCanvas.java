@@ -1,6 +1,7 @@
 package net.coderodde.simulation;
 
 import java.awt.Canvas;
+import java.awt.Color;
 import java.awt.Graphics;
 import java.util.List;
 import java.util.Objects;
@@ -19,6 +20,11 @@ public final class SimulationCanvas extends Canvas {
      */
     private List<Particle> particles;
     
+    /**
+     * The simulation engine.
+     */
+    private Simulator simulator;
+    
     @Override
     public void paint(Graphics g) {
         update(g);
@@ -26,18 +32,31 @@ public final class SimulationCanvas extends Canvas {
     
     @Override
     public void update(Graphics g) {
+        double totalEnergy = simulator.computeTotalEnergy();
+        String totalEnergyString = "Total energy: " + totalEnergy;
+        
         g.setColor(getBackground());
         g.clearRect(0, 0, getWidth(), getHeight());
-        System.out.println(particles.get(0));
         
         for (Particle particle : particles) {
             particle.draw(g);
         }
+        
+        g.setColor(Color.WHITE);
+        g.drawChars(totalEnergyString.toCharArray(), 
+                    0, 
+                    totalEnergyString.length(),
+                    0,
+                    20);
     }
     
     void setParticles(List<Particle> particles) {
         this.particles = Objects.requireNonNull(
                 particles, 
                 "The particle list is null.");
+    }
+    
+    void setSimulator(Simulator simulator) {
+        this.simulator = simulator;
     }
 }

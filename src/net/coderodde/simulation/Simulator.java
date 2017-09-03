@@ -95,7 +95,6 @@ public final class Simulator {
     }
     
     public void run() {
-        pause = false;
         while (!exit) {
             if (!pause) {
                 makeStep();
@@ -181,7 +180,7 @@ public final class Simulator {
         return new Vector(xComponent, yComponent);
     }
     
-    private double computeTotalEnergy() {
+    public double computeTotalEnergy() {
         double totalEnergy = 0.0;
         
         for (Particle particle : particles) {

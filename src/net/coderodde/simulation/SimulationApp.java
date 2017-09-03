@@ -40,16 +40,6 @@ public class SimulationApp {
     private static final int SLEEP_TIME = 100;
     
     /**
-     * The maximum mass of a particle.
-     */
-    private static final double MAX_PARTICLE_MASS = 10.0;
-    
-    /**
-     * The maximum particle radius in pixels.
-     */
-    private static final int MAX_PARTICLE_RADIUS = 20;
-    
-    /**
      * Used for randomly generating the 
      */
     private static final int COLOR_CHANNEL_MAX = 256;
@@ -85,15 +75,14 @@ public class SimulationApp {
                                             TIME_STEP,
                                             SLEEP_TIME);
         
+        simulationCanvas.setSimulator(simulator);
+        
         SimulationFrame simulationFrame = 
                 new SimulationFrame(simulationCanvas,
                                     (int) worldWidth,
                                     (int) worldHeight);
         
-        simulationFrame.getFrame()
-                       .addKeyListener(
-                               new SimulationFrameKeyListener(simulator));
-        
+        simulationFrame.addKeyListener(new SimulationFrameKeyListener(simulator));
         simulator.run();
     }
     
