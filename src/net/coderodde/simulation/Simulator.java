@@ -87,7 +87,7 @@ public final class Simulator {
         this.timeStep = checkTimeStep(timeStep);
         this.sleepTime = checkSleepTime(sleepTime);
         totalEnergy = computeTotalEnergy();
-        simulationCanvas.setParticles(particles);
+        simulationCanvas.setParticles(this.particles);
     }
     
     public void togglePause() {

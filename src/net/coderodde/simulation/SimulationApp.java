@@ -10,6 +10,16 @@ import java.util.Random;
 public class SimulationApp {
 
     /**
+     * The minimum particle mass.
+     */
+    private static final double MINIMUM_MASS = 5.0;
+    
+    /**
+     * The maximum particle mass.
+     */
+    private static final double MAXIMUM_MASS = 30.0;
+    
+    /**
      * Reserve the number of pixels for the title bar.
      */
     private static final int TITLE_BAR_RESERVED_HEIGHT = 50;
@@ -105,8 +115,9 @@ public class SimulationApp {
     private static Particle createRandomParticle(Random random,
                                                  double worldWidth,
                                                  double worldHeight) {
-        double mass = MAX_PARTICLE_MASS * random.nextDouble();
-        int radius = random.nextInt(MAX_PARTICLE_RADIUS) + 1;
+        double mass = MINIMUM_MASS + 
+                     (MAXIMUM_MASS - MINIMUM_MASS) * random.nextDouble();
+        int radius = (int) mass;
         Color color = new Color(random.nextInt(COLOR_CHANNEL_MAX), 
                                 random.nextInt(COLOR_CHANNEL_MAX),
                                 random.nextInt(COLOR_CHANNEL_MAX));

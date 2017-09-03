@@ -13,7 +13,7 @@ import java.util.Objects;
  */
 public final class Particle {
 
-    private static final double GRAVITATIONAL_CONSTANT = 10.0;
+    private static final double FORCE_CONSTANT = 1000000.0;
     
     /**
      * The weight of this particle.
@@ -157,8 +157,7 @@ public final class Particle {
      */
     public double getRejectionForce(Particle other) {
         double distance = getDistance(other);
-        return GRAVITATIONAL_CONSTANT * mass * other.getMass() / 
-               (distance * distance);
+        return FORCE_CONSTANT * mass * other.getMass() / (distance * distance);
     }
     
     /**
@@ -168,8 +167,7 @@ public final class Particle {
      * @return potential energy.
      */
     public double getPotentialEnergy(Particle other) {
-        double distance = getDistance(other);
-        return GRAVITATIONAL_CONSTANT * mass * other.getMass() / distance;
+        return mass * other.getMass() / getDistance(other);
     }
     
     public void draw(Graphics g) {
