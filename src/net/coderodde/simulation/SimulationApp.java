@@ -34,17 +34,17 @@ public final class SimulationApp {
     /**
      * The default number of particles in the simulation.
      */
-    private static final int DEFAULT_PARTICLES = 3;
+    private static final int DEFAULT_PARTICLES = 6;
     
     /**
      * The time step.
      */
-    private static final double TIME_STEP = 0.1;
+    private static final double TIME_STEP = 0.01;
     
     /**
      * The number of milliseconds spent between two consecutive time quants.
      */
-    private static final int SLEEP_TIME = 100;
+    private static final int SLEEP_TIME = 20;
     
     /**
      * Used for randomly generating the color components.
@@ -97,8 +97,8 @@ public final class SimulationApp {
                                     screenDimension.width,
                                     screenDimension.height);
         
-        simulationFrame.addKeyListener(new SimulationFrameKeyListener(simulator));
-//        simulationCanvas.addKeyListener(new SimulationFrameKeyListener(simulator));
+//        simulationFrame.addKeyListener(new SimulationFrameKeyListener(simulator));
+        simulationCanvas.addKeyListener(new SimulationFrameKeyListener(simulator));
         simulator.run();
     }
     

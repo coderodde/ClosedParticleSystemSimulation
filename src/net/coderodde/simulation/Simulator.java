@@ -98,7 +98,6 @@ public final class Simulator {
         while (!exit) {
             if (!pause) {
                 makeStep();
-                System.out.println("fdsa");
                 simulationCanvas.repaint();
             }
             
@@ -115,15 +114,41 @@ public final class Simulator {
         computeForceVectors();
         updateParticleVelocities();
         moveParticles();
-        computePotentialEnergyDelta();
         resolveWorldBorderCollisions();
+        normalizeVelocityVectors();
         particleToForceVectorMap.clear();
     }
     
-    private void computePotentialEnergyDelta() {
-        double currentPotentialEnergy = computeTotalEnergy();
-        double potentialEnergyDelta = currentPotentialEnergy - totalEnergy;
-        System.out.println("Delta: " + potentialEnergyDelta);
+    private void normalizeVelocityVectors() {
+        double totalEnergyDelta = computeTotalEnergyDelta();
+        double factor = getNormalizationConstant(totalEnergyDelta);
+        
+        for (Particle particle : particles) {
+            particle.setVelocityX(factor * particle.getVelocityX());
+            particle.setVelocityY(factor * particle.getVelocityY());
+        }
+    }
+    
+    private double getNormalizationConstant(double totalEnergyDelta) {
+        double aux = totalEnergyDelta / computeTotalKineticEnergy() + 1;
+        return Math.sqrt(aux);
+    }
+    
+    private double computeTotalKineticEnergy() {
+        double kineticEnergy = 0.0;
+        
+        for (Particle particle : particles) {
+            kineticEnergy += particle.getKineticEnergy();
+        }
+        
+        return kineticEnergy;
+    }
+    
+    private double computeTotalEnergyDelta() {
+        double currentTotalEnergy = computeTotalEnergy();
+        double totalEnergyDelta = totalEnergy - currentTotalEnergy;
+        System.out.println("Delta: " + totalEnergyDelta);
+        return totalEnergyDelta;
     }
     
     private void resolveWorldBorderCollisions() {
