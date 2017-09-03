@@ -5,6 +5,9 @@ import java.awt.Graphics;
 import java.util.Objects;
 import static net.coderodde.simulation.Configuration.FORCE_CONSTANT;
 import static net.coderodde.simulation.Configuration.PIXELS_PER_UNIT_LENGTH;
+import static net.coderodde.simulation.Utils.checkNonInfinite;
+import static net.coderodde.simulation.Utils.checkNonNaN;
+import static net.coderodde.simulation.Utils.checkNonNegative;
 
 /**
  * This class defines a particle in the simulation. The entire weight of a
@@ -16,7 +19,7 @@ import static net.coderodde.simulation.Configuration.PIXELS_PER_UNIT_LENGTH;
 public final class Particle {
     
     /**
-     * The weight of this particle.
+     * The mass of this particle.
      */
     private final double mass;
     
@@ -66,6 +69,11 @@ public final class Particle {
                                            "The particle color is null.");
     }
     
+    /**
+     * Copy-constructs a new particle.
+     * 
+     * @param other the other particle to copy.
+     */
     public Particle(Particle other) {
         this.mass      = other.mass;
         this.radius    = other.radius;
@@ -170,6 +178,11 @@ public final class Particle {
         return FORCE_CONSTANT * mass * other.getMass() / getDistance(other);
     }
     
+    /**
+     * Draws this particle on a canvas.
+     * 
+     * @param g the graphics context.
+     */
     public void draw(Graphics g) {
         int effectiveX = (int)(x * PIXELS_PER_UNIT_LENGTH);
         int effectiveY = (int)(y * PIXELS_PER_UNIT_LENGTH);
@@ -181,26 +194,16 @@ public final class Particle {
                    2 * radius);
     }
     
+    @Override
     public String toString() {
         return "[x=" + x + ", y=" + y + ", velocityX=" + velocityX + 
                ", velocityY=" + velocityY + "]";
     }
     
     private double checkMass(double mass) {
-        if (Double.isNaN(mass)) {
-            throw new IllegalArgumentException("The particle mass is NaN.");
-        }
-        
-        if (mass <= 0.0) {
-            throw new IllegalArgumentException(
-                    "The particle mass is non-positive.");
-        }
-        
-        if (Double.isInfinite(mass)) {
-            throw new IllegalArgumentException(
-                    "The particle mass is infinite.");
-        }
-        
+        checkNonNaN(mass, "The particle mass is NaN.");
+        checkNonNegative(mass, "The particle mass is non-positive.");
+        checkNonInfinite(mass, "The particle mass is infinite.");
         return mass;
     }
     
@@ -213,50 +216,39 @@ public final class Particle {
         return radius;
     }
     
-    private void checkNotNaN(double d, String errorMessage) {
-        if (Double.isNaN(d)) {
-            throw new IllegalArgumentException(errorMessage);
-        }
-    }
-    
-    private void checkNotInfinite(double d, String errorMessage) {
-        if (Double.isInfinite(d)) {
-            throw new IllegalArgumentException(errorMessage);
-        }
-    }
-    
-    private void checkNotNaNOrInfinite(double d, 
-                                       String errorMessageNaN,
-                                       String errorMessageInfinite) {
-        checkNotNaN(d, errorMessageNaN);
-        checkNotInfinite(d, errorMessageInfinite);
+    private double checkCoordinate(double coordinate,
+                                   String errorMessageNaN,
+                                   String errorMessageInfinite) {
+        checkNonNaN(coordinate, errorMessageNaN);
+        checkNonInfinite(coordinate, errorMessageInfinite);
+        return coordinate;
     }
     
     private double checkX(double x) {
-        checkNotNaNOrInfinite(x,
-                              "The x-coordinate is NaN.", 
-                              "The x-coordinate is infinite.");
+        checkCoordinate(x,
+                        "The x-coordinate is NaN.", 
+                        "The x-coordinate is infinite.");
         return x;
     }
     
     private double checkY(double y) {
-        checkNotNaNOrInfinite(y,
-                              "The y-coordinate is NaN.", 
-                              "The y-coordinate is infinite.");
+        checkCoordinate(y,
+                        "The y-coordinate is NaN.", 
+                        "The y-coordinate is infinite.");
         return y;
     }
     
     private double checkVelocityX(double velocityX) {
-        checkNotNaNOrInfinite(velocityX,
-                              "The x-velocity is NaN.",
-                              "The x-velocity is infinite.");
+        checkCoordinate(velocityX,
+                        "The x-velocity is NaN.",
+                        "The x-velocity is infinite.");
         return velocityX;
     }
     
     private double checkVelocityY(double velocityY) {
-        checkNotNaNOrInfinite(velocityY,
-                              "The y-velocity is NaN.", 
-                              "The y-velocity is infinite.");
+        checkCoordinate(velocityY,
+                        "The y-velocity is NaN.", 
+                        "The y-velocity is infinite.");
         return velocityY;
     }
 }

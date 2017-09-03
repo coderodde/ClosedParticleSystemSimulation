@@ -100,7 +100,7 @@ public final class Simulator {
     public void run() {
         while (!exit) {
             if (!pause) {
-                makeStep();
+                performStep();
                 simulationCanvas.repaint();
             }
             
@@ -112,7 +112,33 @@ public final class Simulator {
         return Collections.<Particle>unmodifiableList(particles);
     }
     
-    private void makeStep() {
+    /**
+     * Checks that the particle list is not empty.
+     * 
+     * @param particles the particles list.
+     */
+    private void checkNotEmpty(List<Particle> particles) {
+        if (particles.isEmpty()) {
+            throw new IllegalArgumentException("No particles given.");
+        }
+    }
+    
+    /**
+     * Makes internal copies of all the particles so that client programmer 
+     * cannot interfere.
+     * 
+     * @param particles the particle list.
+     */
+    private void copy(List<Particle> particles) {
+        for (Particle particle : particles) {
+            this.particles.add(new Particle(particle));
+        }
+    }
+    
+    /**
+     * Performs one simulation step.
+     */
+    private void performStep() {
         // Compute the force vectors of all partices:
         computeForceVectors();
         updateParticleVelocities();
@@ -122,76 +148,9 @@ public final class Simulator {
         particleToForceVectorMap.clear();
     }
     
-    private void normalizeVelocityVectors() {
-        double totalEnergyDelta = computeTotalEnergyDelta();
-        double factor = getNormalizationConstant(totalEnergyDelta);
-        
-        for (Particle particle : particles) {
-            particle.setVelocityX(factor * particle.getVelocityX());
-            particle.setVelocityY(factor * particle.getVelocityY());
-        }
-    }
-    
-    private double getNormalizationConstant(double totalEnergyDelta) {
-        double aux = totalEnergyDelta / computeTotalKineticEnergy() + 1;
-        
-        if (aux < 0.0) {
-            return 1.0;
-        }
-        
-        return Math.sqrt(aux);
-    }
-    
-    private double computeTotalKineticEnergy() {
-        double kineticEnergy = 0.0;
-        
-        for (Particle particle : particles) {
-            kineticEnergy += particle.getKineticEnergy();
-        }
-        
-        return kineticEnergy;
-    }
-    
-    private double computeTotalEnergyDelta() {
-        double currentTotalEnergy = computeTotalEnergy();
-        double totalEnergyDelta = totalEnergy - currentTotalEnergy;
-        return totalEnergyDelta;
-    }
-    
-    private void resolveWorldBorderCollisions() {
-        for (Particle particle : particles) {
-            if (particle.getY() <= 0.0 || particle.getY() >= worldHeight) {
-                particle.setVelocityY(-particle.getVelocityY());
-            } 
-            
-            if (particle.getX() <= 0.0 || particle.getX() >= worldWidth) {
-                particle.setVelocityX(-particle.getVelocityX());
-            }
-        }
-    }
-    
-    private void moveParticles() {
-        for (Particle particle : particles) {
-            particle.setX(particle.getX() + particle.getVelocityX() * timeStep);
-            particle.setY(particle.getY() + particle.getVelocityY() * timeStep);
-        }
-    }
-    
-    private void updateParticleVelocities() {
-        for (Map.Entry<Particle, Vector> e
-                : particleToForceVectorMap.entrySet()) {
-            Particle particle = e.getKey();
-            Vector vector = e.getValue();
-            vector = vector.multiply(1.0 / particle.getMass());
-            
-            particle.setVelocityX(
-                    particle.getVelocityX() + vector.getX() * timeStep);
-            
-            particle.setVelocityY(
-                    particle.getVelocityY() + vector.getY() * timeStep);
-        }
-    }
-    
+    /**
+     * Computes all the repelling force vectors for each particle.
+     */
     private void computeForceVectors() {
         for (Particle particle : particles) {
             Vector vector = new Vector();
@@ -210,6 +169,14 @@ public final class Simulator {
         }
     }
     
+    /**
+     * Computes a repelling force vector from {@code other} to {@code target}.
+     * 
+     * @param target the target particle.
+     * @param other  the particle exerting repelling force towards 
+     *               {@code target}.
+     * @return the force vector.
+     */
     private Vector computeForceVector(Particle target, Particle other) {
         double vectorLength = target.getRejectionForce(other);
         double dx = target.getX() - other.getX();
@@ -220,6 +187,115 @@ public final class Simulator {
         return new Vector(xComponent, yComponent);
     }
     
+    /**
+     * Updates the velocities of each particle.
+     */
+    private void updateParticleVelocities() {
+        for (Map.Entry<Particle, Vector> e
+                : particleToForceVectorMap.entrySet()) {
+            Particle particle = e.getKey();
+            Vector vector = e.getValue();
+            // Make the force 'vector' a acceleration vector:
+            vector = vector.multiply(1.0 / particle.getMass());
+            
+            // Update the velocity components:
+            particle.setVelocityX(
+                    particle.getVelocityX() + vector.getX() * timeStep);
+            
+            particle.setVelocityY(
+                    particle.getVelocityY() + vector.getY() * timeStep);
+        }
+    }
+    
+    /**
+     * Moves all the particles.
+     */
+    private void moveParticles() {
+        for (Particle particle : particles) {
+            particle.setX(particle.getX() + particle.getVelocityX() * timeStep);
+            particle.setY(particle.getY() + particle.getVelocityY() * timeStep);
+        }
+    }
+    
+    /**
+     * Resolves all the border collisions.
+     */
+    private void resolveWorldBorderCollisions() {
+        for (Particle particle : particles) {
+            if (particle.getY() <= 0.0 || particle.getY() >= worldHeight) {
+                particle.setVelocityY(-particle.getVelocityY());
+            } 
+            
+            if (particle.getX() <= 0.0 || particle.getX() >= worldWidth) {
+                particle.setVelocityX(-particle.getVelocityX());
+            }
+        }
+    }
+    
+    /**
+     * Normalizes the current velocity vectors such that the total energy of the
+     * system remains constant.
+     */
+    private void normalizeVelocityVectors() {
+        double totalEnergyDelta = computeTotalEnergyDelta();
+        double factor = getNormalizationConstant(totalEnergyDelta);
+        
+        for (Particle particle : particles) {
+            particle.setVelocityX(factor * particle.getVelocityX());
+            particle.setVelocityY(factor * particle.getVelocityY());
+        }
+    }
+    
+    /**
+     * Computes the difference between initial total energy and current total
+     * energy.
+     * 
+     * @return the total energy difference.
+     */
+    private double computeTotalEnergyDelta() {
+        double currentTotalEnergy = computeTotalEnergy();
+        double totalEnergyDelta = totalEnergy - currentTotalEnergy;
+        return totalEnergyDelta;
+    }
+    
+    /**
+     * Computes such a velocity normalization constant, that the total energy of
+     * the system remains constant.
+     * 
+     * @param totalEnergyDelta the difference of initial and current total
+     *                         energies.
+     * @return the velocity normalization constant.
+     */
+    private double getNormalizationConstant(double totalEnergyDelta) {
+        double aux = totalEnergyDelta / computeTotalKineticEnergy() + 1;
+        
+        if (aux < 0.0) {
+            return 1.0;
+        }
+        
+        return Math.sqrt(aux);
+    }
+    
+    /**
+     * Computes the sum of kinetic energies of all the particles.
+     * 
+     * @return the sum of kinetic energies.
+     */
+    private double computeTotalKineticEnergy() {
+        double kineticEnergy = 0.0;
+        
+        for (Particle particle : particles) {
+            kineticEnergy += particle.getKineticEnergy();
+        }
+        
+        return kineticEnergy;
+    }
+    
+    /**
+     * Computes the current total energy.
+     * 
+     * @return the current total energy.
+     */
     public double computeTotalEnergy() {
         double totalEnergy = 0.0;
         
@@ -239,18 +315,9 @@ public final class Simulator {
         return totalEnergy;
     }
     
-    private void checkNotEmpty(List<Particle> particles) {
-        if (particles.isEmpty()) {
-            throw new IllegalArgumentException("No particles given.");
-        }
-    }
-    
-    private void copy(List<Particle> particles) {
-        for (Particle particle : particles) {
-            this.particles.add(new Particle(particle));
-        }
-    }
-    
+    /**
+     * Checks that there is no two different particles on the same spot.
+     */
     private void checkParticlesDoNotOverlap() {
         for (int i = 0; i < particles.size(); ++i) {
             Particle particle1 = particles.get(i);
