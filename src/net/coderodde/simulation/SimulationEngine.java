@@ -16,12 +16,22 @@ import static net.coderodde.simulation.Utils.checkNonNegative;
  * @author Rodion "rodde" Efremov
  * @version 1.6 (Sep 2, 2017)
  */
-public final class Simulator {
+public final class SimulationEngine {
 
     /**
      * The list of particles.
      */
     private final List<Particle> particles = new ArrayList<>();
+    
+    /**
+     * Holds the object computing the force between two particles.
+     */
+    private final ParticlePairForce particlePairForce;
+    
+    /**
+     * Holds the object computing the potential energy between two particles.
+     */
+    private final ParticlePairPotentialEnergy particlePairPotentialEnergy;
 
     /**
      * Holds the canvas for drawing the system.
@@ -69,13 +79,24 @@ public final class Simulator {
     private final Map<Particle, Vector> particleToForceVectorMap = 
             new HashMap<>();
 
-    public Simulator(List<Particle> particles,
+    public SimulationEngine(List<Particle> particles,
+                     ParticlePairForce particlePairForce,
+                     ParticlePairPotentialEnergy particlePairPotentialEnergy,
                      SimulationPanel simulationCanvas,
                      double worldWidth,
                      double worldHeight,
                      double timeStep,
                      int sleepTime) {
         Objects.requireNonNull(particles, "The particle list is null.");
+        this.particlePairForce = 
+                Objects.requireNonNull(
+                        particlePairForce, 
+                        "The particle pair force is null.");
+        this.particlePairPotentialEnergy = 
+                Objects.requireNonNull(
+                        particlePairPotentialEnergy,
+                        "The particle pair potential energy is null.");
+        
         checkNotEmpty(particles);
         checkParticlesDoNotOverlap(particles);
         
@@ -166,7 +187,7 @@ public final class Simulator {
      * @return the force vector.
      */
     private Vector computeForceVector(Particle target, Particle other) {
-        double vectorLength = target.getRejectionForce(other);
+        double vectorLength = particlePairForce.getForce(target, other);
         double dx = target.getX() - other.getX();
         double dy = target.getY() - other.getY();
         double angle = Math.atan2(dy, dx);
@@ -299,7 +320,9 @@ public final class Simulator {
 
             for (int j = i + 1; j < particles.size(); ++j) {
                 Particle particle2 = particles.get(j);
-                totalEnergy += particle1.getPotentialEnergy(particle2);
+                totalEnergy += 
+                        particlePairPotentialEnergy
+                                .getPotentialEnergy(particle1, particle2);
             }
         }
 

@@ -15,15 +15,7 @@ import static net.coderodde.simulation.Utils.checkNonNegative;
 public final class Particle {
 
     private final double mass;
-
-    /**
-     * The current x-coordinate of this particle.
-     */
     private double x;
-
-    /**
-     * The current y-coordinate of this particle.
-     */
     private double y;
 
     /**
@@ -100,58 +92,21 @@ public final class Particle {
         this.velocityY = checkVelocityY(velocityY);
     }
 
-    /**
-     * Returns the current speed of this particle.
-     * 
-     * @return the current speed.
-     */
     public double getSpeed() {
         double vxSquared = velocityX * velocityX;
         double vySquared = velocityY * velocityY;
         return Math.sqrt(vxSquared + vySquared);
     }
 
-    /**
-     * Returns the distance between this particle and {@code other}.
-     * 
-     * @param other the other particle.
-     * @return the distance between two particles.
-     */
     public double getDistance(Particle other) {
         double dx = x - other.x;
         double dy = y - other.y;
         return Math.sqrt(dx * dx + dy * dy);
     }
 
-    /**
-     * Computes the kinetic energy of this particle.
-     * 
-     * @return the kinetic energy.
-     */
     public double getKineticEnergy() {
         double speed = getSpeed();
         return 0.5 * mass * speed * speed;
-    }
-
-    /**
-     * Computes the rejection force between this and {@code other} particles.
-     * 
-     * @param other the other particle.
-     * @return the rejection force.
-     */
-    public double getRejectionForce(Particle other) {
-        double distance = getDistance(other);
-        return FORCE_CONSTANT * mass * other.getMass() / (distance * distance);
-    }
-
-    /**
-     * Computes the potential energy between this and {@code other} particle.
-     * 
-     * @param other the other particle.
-     * @return potential energy.
-     */
-    public double getPotentialEnergy(Particle other) {
-        return FORCE_CONSTANT * mass * other.getMass() / getDistance(other);
     }
 
     @Override

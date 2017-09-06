@@ -19,7 +19,7 @@ public final class SimulationPanel extends JPanel {
      * The list of objects describing how to render each particle.
      */
     private List<ParticleRenderer> particleRenderers;
-    private Simulator simulator;
+    private SimulationEngine simulator;
 
     @Override
     public void paintComponent(Graphics g) {
@@ -47,7 +47,7 @@ public final class SimulationPanel extends JPanel {
                 "The particle representation list is null.");
     }
 
-    void setSimulator(Simulator simulator) {
+    void setSimulator(SimulationEngine simulator) {
         this.simulator = simulator;
     }
 }

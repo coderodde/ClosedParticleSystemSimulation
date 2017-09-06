@@ -64,7 +64,13 @@ public final class SimulationApp {
         List<ParticleRenderer> particleRenderers = 
                 extractRenderers(particleData);
         
-        Simulator simulator = new Simulator(particles,
+        ParticlePairForce particlePairForce = new DefaultParticlePairForce();
+        ParticlePairPotentialEnergy particlePairPotentialEnergy =
+                new RepellingParticlePairPotentialEnergy();
+        
+        SimulationEngine simulator = new SimulationEngine(particles,
+                                            particlePairForce,
+                                            particlePairPotentialEnergy,
                                             simulationPanel,
                                             worldWidth,
                                             worldHeight,

@@ -6,9 +6,9 @@ import java.util.Objects;
 
 public final class SimulationFrameKeyListener implements KeyListener {
 
-    private final Simulator simulator;
+    private final SimulationEngine simulator;
 
-    public SimulationFrameKeyListener(Simulator simulator) {
+    public SimulationFrameKeyListener(SimulationEngine simulator) {
         this.simulator = Objects.requireNonNull(simulator,
                                                 "The simulator is null.");
     }
