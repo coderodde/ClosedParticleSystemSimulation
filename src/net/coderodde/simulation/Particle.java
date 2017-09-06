@@ -1,10 +1,6 @@
 package net.coderodde.simulation;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.util.Objects;
 import static net.coderodde.simulation.Configuration.FORCE_CONSTANT;
-import static net.coderodde.simulation.Configuration.PIXELS_PER_UNIT_LENGTH;
 import static net.coderodde.simulation.Utils.checkNonInfinite;
 import static net.coderodde.simulation.Utils.checkNonNaN;
 import static net.coderodde.simulation.Utils.checkNonNegative;
@@ -18,20 +14,7 @@ import static net.coderodde.simulation.Utils.checkNonNegative;
  */
 public final class Particle {
 
-    /**
-     * The mass of this particle.
-     */
     private final double mass;
-
-    /**
-     * The radius of the graphical representation of this particle.
-     */
-    private final int radius;
-
-    /**
-     * The color of the graphical representation of this particle.
-     */
-    private final Color color;
 
     /**
      * The current x-coordinate of this particle.
@@ -59,14 +42,9 @@ public final class Particle {
      * Constructs a new particle.
      * 
      * @param mass the weight of the new particle.
-     * @param radius the radius of the new particle.
-     * @param color  the color of the new particle.
      */
-    public Particle(double mass, int radius, Color color) {
+    public Particle(double mass) {
         this.mass = checkMass(mass);
-        this.radius = checkRadius(radius);
-        this.color = Objects.requireNonNull(color, 
-                                           "The particle color is null.");
     }
 
     /**
@@ -76,8 +54,6 @@ public final class Particle {
      */
     public Particle(Particle other) {
         this.mass      = other.mass;
-        this.radius    = other.radius;
-        this.color     = other.color;
         this.x         = other.x;
         this.y         = other.y;
         this.velocityX = other.velocityX;
@@ -178,22 +154,6 @@ public final class Particle {
         return FORCE_CONSTANT * mass * other.getMass() / getDistance(other);
     }
 
-    /**
-     * Draws this particle on a canvas.
-     * 
-     * @param g the graphics context.
-     */
-    public void draw(Graphics g) {
-        int effectiveX = (int)(x * PIXELS_PER_UNIT_LENGTH);
-        int effectiveY = (int)(y * PIXELS_PER_UNIT_LENGTH);
-
-        g.setColor(color);
-        g.fillOval(effectiveX - radius, 
-                   effectiveY - radius,
-                   2 * radius,
-                   2 * radius);
-    }
-
     @Override
     public String toString() {
         return "[x=" + x + ", y=" + y + ", velocityX=" + velocityX + 
@@ -205,15 +165,6 @@ public final class Particle {
         checkNonNegative(mass, "The particle mass is non-positive.");
         checkNonInfinite(mass, "The particle mass is infinite.");
         return mass;
-    }
-
-    private int checkRadius(int radius) {
-        if (radius <= 0) {
-            throw new IllegalArgumentException(
-                    "The particle radius is non-positive: " + radius);
-        }
-
-        return radius;
     }
 
     private double checkCoordinate(double coordinate,

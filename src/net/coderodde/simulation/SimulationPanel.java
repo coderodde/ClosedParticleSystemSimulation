@@ -16,13 +16,9 @@ import javax.swing.JPanel;
 public final class SimulationPanel extends JPanel {
 
     /**
-     * The list of particles.
+     * The list of objects describing how to render each particle.
      */
-    private List<Particle> particles;
-
-    /**
-     * The simulation engine.
-     */
+    private List<ParticleRenderer> particleRenderers;
     private Simulator simulator;
 
     @Override
@@ -33,7 +29,7 @@ public final class SimulationPanel extends JPanel {
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, getWidth(), getHeight());
 
-        for (Particle particle : particles) {
+        for (ParticleRenderer particle : particleRenderers) {
             particle.draw(g);
         }
 
@@ -45,10 +41,10 @@ public final class SimulationPanel extends JPanel {
                     20);
     }
 
-    void setParticles(List<Particle> particles) {
-        this.particles = Objects.requireNonNull(
+    void setParticleRenderers(List<ParticleRenderer> particles) {
+        this.particleRenderers = Objects.requireNonNull(
                 particles, 
-                "The particle list is null.");
+                "The particle representation list is null.");
     }
 
     void setSimulator(Simulator simulator) {

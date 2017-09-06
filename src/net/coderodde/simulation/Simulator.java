@@ -26,7 +26,7 @@ public final class Simulator {
     /**
      * Holds the canvas for drawing the system.
      */
-    private final SimulationPanel simulationCanvas;
+    private final SimulationPanel simulationPanel;
 
     /**
      * The time quant.
@@ -76,21 +76,20 @@ public final class Simulator {
                      double timeStep,
                      int sleepTime) {
         Objects.requireNonNull(particles, "The particle list is null.");
-
-        this.simulationCanvas = 
+        checkNotEmpty(particles);
+        checkParticlesDoNotOverlap(particles);
+        
+        this.particles.addAll(particles);
+        this.simulationPanel = 
                 Objects.requireNonNull(
                         simulationCanvas,
                         "The simulation canvas is null.");
 
-        checkNotEmpty(particles);
-        copy(particles);
-        checkParticlesDoNotOverlap();
         this.worldWidth = checkWorldWidth(worldWidth);
         this.worldHeight = checkWorldHeight(worldHeight);
         this.timeStep = checkTimeStep(timeStep);
         this.sleepTime = checkSleepTime(sleepTime);
         totalEnergy = computeTotalEnergy();
-        simulationCanvas.setParticles(this.particles);
     }
 
     public void togglePause() {
@@ -98,10 +97,11 @@ public final class Simulator {
     }
 
     public void run() {
+        pause = false;
         while (!exit) {
             if (!pause) {
                 performStep();
-                simulationCanvas.repaint();
+                simulationPanel.repaint();
             }
 
             sleep(sleepTime);
@@ -120,18 +120,6 @@ public final class Simulator {
     private void checkNotEmpty(List<Particle> particles) {
         if (particles.isEmpty()) {
             throw new IllegalArgumentException("No particles given.");
-        }
-    }
-
-    /**
-     * Makes internal copies of all the particles so that client programmer 
-     * cannot interfere.
-     * 
-     * @param particles the particle list.
-     */
-    private void copy(List<Particle> particles) {
-        for (Particle particle : particles) {
-            this.particles.add(new Particle(particle));
         }
     }
 
@@ -321,7 +309,7 @@ public final class Simulator {
     /**
      * Checks that there is no two different particles on the same spot.
      */
-    private void checkParticlesDoNotOverlap() {
+    private void checkParticlesDoNotOverlap(List<Particle> particles) {
         for (int i = 0; i < particles.size(); ++i) {
             Particle particle1 = particles.get(i);
 

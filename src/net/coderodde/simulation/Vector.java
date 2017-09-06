@@ -46,10 +46,6 @@ public final class Vector {
         return new Vector(x * factor, y * factor);
     }
 
-    public double dotProduct(Vector other) {
-        return x * other.x + y * other.y;
-    }
-
     @Override
     public String toString() {
         return "(x=" + x + ", y=" + y + ")";
