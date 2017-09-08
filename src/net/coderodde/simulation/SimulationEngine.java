@@ -118,7 +118,6 @@ public final class SimulationEngine {
     }
 
     public void run() {
-        pause = false;
         while (!exit) {
             if (!pause) {
                 performStep();
@@ -231,12 +230,20 @@ public final class SimulationEngine {
      */
     private void resolveWorldBorderCollisions() {
         for (Particle particle : particles) {
-            if (particle.getY() <= 0.0 || particle.getY() >= worldHeight) {
+            if (particle.getY() - particle.getRadius() <= 0.0) {
                 particle.setVelocityY(-particle.getVelocityY());
-            } 
-
-            if (particle.getX() <= 0.0 || particle.getX() >= worldWidth) {
-                particle.setVelocityX(-particle.getVelocityX());
+                particle.setY(particle.getRadius());
+            } else if (particle.getY() + particle.getRadius() >= worldHeight) {
+                particle.setVelocityY(-particle.getVelocityY());
+                particle.setY(worldHeight - particle.getRadius());
+            }
+            
+            if (particle.getX() - particle.getRadius() <= 0.0) {
+                particle.setVelocityX(particle.getVelocityX());
+                particle.setX(particle.getRadius());
+            } else if (particle.getX() + particle.getRadius() >= worldWidth) {
+                particle.setVelocityX(particle.getVelocityX());
+                particle.setX(worldWidth - particle.getRadius());
             }
         }
     }
@@ -247,7 +254,7 @@ public final class SimulationEngine {
      */
     private void normalizeVelocityVectors() {
         double totalEnergyDelta = computeTotalEnergyDelta();
-        double factor = getNormalizationConstant(totalEnergyDelta);
+        double factor = getNormalizationFactor(totalEnergyDelta);
 
         for (Particle particle : particles) {
             particle.setVelocityX(factor * particle.getVelocityX());
@@ -275,7 +282,7 @@ public final class SimulationEngine {
      *                         energies.
      * @return the velocity normalization constant.
      */
-    private double getNormalizationConstant(double totalEnergyDelta) {
+    private double getNormalizationFactor(double totalEnergyDelta) {
         double aux = totalEnergyDelta / computeTotalKineticEnergy() + 1;
 
         if (aux < 0.0) {

@@ -66,6 +66,7 @@ public final class SimulationApp {
         
         ParticlePairForce particlePairForce = new DefaultParticlePairForce();
         ParticlePairPotentialEnergy particlePairPotentialEnergy =
+//                new AttractingParticlePairPotentialEnergy();
                 new RepellingParticlePairPotentialEnergy();
         
         SimulationEngine simulator = new SimulationEngine(particles,
@@ -136,20 +137,19 @@ public final class SimulationApp {
                      (MAXIMUM_PARTICLE_MASS - MINIMUM_PARTICLE_MASS) * 
                       random.nextDouble();
         
-        int radius = (int) mass;
+        double radius = Configuration.RADIUS_FACTOR * mass;
         Color color = new Color(random.nextInt(COLOR_CHANNEL_MAX), 
                                 random.nextInt(COLOR_CHANNEL_MAX),
                                 random.nextInt(COLOR_CHANNEL_MAX));
 
         
-        Particle particle = new Particle(mass);
+        Particle particle = new Particle(mass, radius);
         particle.setX(worldWidth  * random.nextDouble());
         particle.setY(worldHeight * random.nextDouble());
         particle.setVelocityX(MAX_INITIAL_VELOCITY * random.nextDouble());
         particle.setVelocityY(MAX_INITIAL_VELOCITY * random.nextDouble());
         
         ParticleRenderer particleRenderer = new ParticleRenderer(particle,
-                                                                 radius,
                                                                  color);
         return new ParticleData(particle, particleRenderer);
     }

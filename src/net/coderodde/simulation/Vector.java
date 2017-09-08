@@ -29,6 +29,10 @@ public final class Vector {
     public Vector() {
         this(0.0, 0.0);
     }
+    
+    public Vector invert() {
+        return new Vector(-x, -y);
+    }
 
     public double getX() {
         return x;

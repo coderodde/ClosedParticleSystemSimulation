@@ -1,6 +1,5 @@
 package net.coderodde.simulation;
 
-import static net.coderodde.simulation.Configuration.FORCE_CONSTANT;
 import static net.coderodde.simulation.Utils.checkNonInfinite;
 import static net.coderodde.simulation.Utils.checkNonNaN;
 import static net.coderodde.simulation.Utils.checkNonNegative;
@@ -15,9 +14,10 @@ import static net.coderodde.simulation.Utils.checkNonNegative;
 public final class Particle {
 
     private final double mass;
+    private final double radius;
     private double x;
     private double y;
-
+    
     /**
      * The current velocity to the right. May be negative when the particle 
      * moves to the left.
@@ -35,25 +35,9 @@ public final class Particle {
      * 
      * @param mass the weight of the new particle.
      */
-    public Particle(double mass) {
+    public Particle(double mass, double radius) {
         this.mass = checkMass(mass);
-    }
-
-    /**
-     * Copy-constructs a new particle.
-     * 
-     * @param other the other particle to copy.
-     */
-    public Particle(Particle other) {
-        this.mass      = other.mass;
-        this.x         = other.x;
-        this.y         = other.y;
-        this.velocityX = other.velocityX;
-        this.velocityY = other.velocityY;
-    }
-
-    public Vector getVelocityVector() {
-        return new Vector(velocityX, velocityY);
+        this.radius = checkRadius(radius);
     }
 
     public double getX() {
@@ -74,6 +58,10 @@ public final class Particle {
 
     public double getMass() {
         return mass;
+    }
+    
+    public double getRadius() {
+        return radius;
     }
 
     public void setX(double x) {
@@ -120,6 +108,13 @@ public final class Particle {
         checkNonNegative(mass, "The particle mass is non-positive.");
         checkNonInfinite(mass, "The particle mass is infinite.");
         return mass;
+    }
+    
+    private double checkRadius(double radius) {
+        checkNonNaN(radius, "The particle radius is NaN.");
+        checkNonNegative(radius, "The particle radius is non-positive.");
+        checkNonInfinite(radius, "The particle radius is infinite.");
+        return radius;
     }
 
     private double checkCoordinate(double coordinate,

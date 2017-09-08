@@ -10,7 +10,7 @@ public final class Configuration {
 
     /**
      * Defines the drawing scale. A distance of one unit length corresponds to 
-     * the length of 100 pixels.
+     * the length of 10 pixels.
      */
     public static final int PIXELS_PER_UNIT_LENGTH = 10;
 
@@ -28,6 +28,8 @@ public final class Configuration {
      * The maximum particle mass.
      */
     public static final double MAXIMUM_PARTICLE_MASS = 30.0;
+    
+    public static final double RADIUS_FACTOR = 0.05;
     
     /**
      * The number of milliseconds spent between two consecutive time quants.
@@ -47,5 +49,5 @@ public final class Configuration {
     /**
      * The default number of particles in the simulation.
      */
-    public static final int DEFAULT_NUMBER_OF_PARTICLES = 3;
+    public static final int DEFAULT_NUMBER_OF_PARTICLES = 10;
 }
